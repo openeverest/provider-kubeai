@@ -33,14 +33,14 @@ type VllmCustomSpec struct {
 
 // ModelSpec describes where the model weights actually comes from and hints for placement validation
 // for e.g; vllm: "hf://<repo_name>/<model>", "pvc://<name>", or "s3://..."
-// we can also serve ollama for dev testing of entire provider flow which can run on CPU 
+// we can also serve ollama for dev testing of entire provider flow which can run on CPU
 // without need of GPUs e.g; Ollama: "ollama://<model>"
 type ModelSpec struct {
 	// Source is the model URL understood by the serving engine.
 	Source string `json:"source"`
 
 	// EstimatedParamBillions is an optional hint (model size in billions of params)
-	// used by Validate() for a GPU memory 
+	// used by Validate() for a GPU memory
 	EstimatedParamBillions *int32 `json:"estimatedParamBillions,omitempty"`
 
 	// Quantization declares the weight precision for the fit heuristic.
