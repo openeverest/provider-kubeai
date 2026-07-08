@@ -27,13 +27,18 @@ type Provider struct {
 	controller.BaseProvider
 }
 
+// New constructs the KubeAI provider with the runtime metadata needed by the
+// shared controller.
 func New() *Provider {
 	return &Provider{
 		BaseProvider: controller.BaseProvider{
+			// ProviderName identifies this provider in OpenEverest status and connection details.
 			ProviderName: common.ProviderName,
+			// SchemeFuncs registers KubeAI resources with the controller-runtime scheme.
 			SchemeFuncs: []func(*runtime.Scheme) error{
 				kubeaiv1.SchemeBuilder.AddToScheme,
 			},
+			// WatchConfigs tells the provider to reconcile Instances when owned Models change.
 			WatchConfigs: []controller.WatchConfig{
 				controller.WatchOwned(&kubeaiv1.Model{}),
 			},
@@ -59,8 +64,10 @@ func (p *Provider) Validate(c *controller.Context) error {
 	if cs.Model.Source == "" {
 		return fmt.Errorf("components.%s.customSpec.model.source is required", common.ComponentServer)
 	}
-
-	// todo engineForSource
+	
+	if engineForSource(cs.Model.Source) == "" {
+		return fmt.Errorf("model.source must start with hf://, pvc://, ollama://, s3://, gs:// or oss://")
+	}
 
 	// AutoScaled Topology validator for min and max replicas count
 	var topo autoscaled.AutoScaledTopologyConfig
