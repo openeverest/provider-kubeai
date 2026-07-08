@@ -1,0 +1,13 @@
+# Autoscaled topology definition.
+# This file defines both the structural topology and its UI rendering.
+#
+# config.components: Which components are used and their defaults.
+# config.configSchema: Reference a Go type for custom topology config fields.
+# ui: have to discuss wih frontend team TODO
+
+config:
+    configSchema: AutoscaledTopologyConfig
+    components:
+        server:
+            defaults:
+                replicas: 1
