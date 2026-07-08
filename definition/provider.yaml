@@ -1,0 +1,12 @@
+# Provider identity and compoent definitions
+# Only edit this file to add or remove components
+# Always run `make generate` after updating the file
+name: provider-kubeai
+
+# The single logical component of an LLM deployment: the inference server
+# Its type is vllm(underlying software), and its free-form configuration
+# model source, engine is described by VllmCustomSpec in definitions/components/types.go
+components:
+    server:
+        type: vllm
+        customSpecSchema: VllmCustomSpec

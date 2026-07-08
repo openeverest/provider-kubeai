@@ -1,0 +1,35 @@
+# Component type version catalog.
+# Note on images: unlike database operators, KubeAI resolves the actual server
+# image itself from (engine + resourceProfile) in its system config. The images
+# listed here document which engine release each catalog version corresponds to
+# and are used as the default reference; the provider can pass them as an
+# explicit Model.spec.image override when the user pins a version.
+
+componentTypes:
+    vllm:
+        versions:
+            - version: "0.11.2"
+              image: vllm/vllm-openai:v0.11.2
+              default: true
+            - version: "0.10.1"
+              image: vllm/vllm-openai:v0.10.1
+            # CPU-friendly engine release for local development.
+            # KubeAI's OLlama engine is selected via the customSpec model source
+            # (ollama://...), the image below is the matching Ollama release.
+            - version: "0.11.11-ollama"
+              image: ollama/ollama:0.11.11
+
+# Version bundles: curated sets of component versions known to work together.
+# Users set spec.version to a bundle name; the runtime resolves each
+# component's version before Sync() is called.
+versions:
+    - name: "vllm-0.11.2"
+      default: true
+      components:
+          server: "0.11.2"
+    - name: "vllm-0.10.1"
+      components:
+          server: "0.10.1"
+    - name: "ollama-cpu"
+      components:
+          server: "0.11.11-ollama"
