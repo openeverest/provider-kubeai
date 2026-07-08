@@ -2,7 +2,11 @@ module github.com/openeverest/provider-kubeai
 
 go 1.26.2
 
-require github.com/openeverest/openeverest/v2 v2.0.0-dev.1
+require (
+	github.com/kubeai-project/kubeai v0.23.2
+	github.com/openeverest/openeverest/v2 v2.0.0-dev.1
+	k8s.io/apimachinery v0.36.0
+)
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -58,7 +62,6 @@ require (
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	k8s.io/api v0.36.0 // indirect
 	k8s.io/apiextensions-apiserver v0.36.0 // indirect
-	k8s.io/apimachinery v0.36.0 // indirect
 	k8s.io/client-go v0.36.0 // indirect
 	k8s.io/klog/v2 v2.140.0 // indirect
 	k8s.io/kube-openapi v0.0.0-20260504175024-7bfe71ffdc10 // indirect
