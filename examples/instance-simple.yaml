@@ -1,0 +1,19 @@
+# Minimal Instance CR — CPU-only Ollama model for local (k3d) development.
+# No GPU required; pins one replica because CPU cold starts are slow.
+apiVersion: core.openeverest.io/v1alpha1
+kind: Instance
+metadata:
+  name: qwen2-05b-cpu
+spec:
+  provider: provider-kubeai
+  topology:
+    type: autoscaled
+    config:
+      minReplicas: 1
+      maxReplicas: 1
+  components:
+    server:
+      customSpec:
+        model:
+          source: ollama://qwen2:0.5b
+        resourceProfile: cpu:1

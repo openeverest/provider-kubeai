@@ -6,7 +6,7 @@
 # ui: have to discuss wih frontend team TODO
 
 config:
-    configSchema: AutoscaledTopologyConfig
+    configSchema: AutoScaledTopologyConfig
     components:
         server:
             defaults:

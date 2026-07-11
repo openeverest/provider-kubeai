@@ -1,0 +1,92 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: manager-role
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - create
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - core.openeverest.io
+  resources:
+  - instances
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - core.openeverest.io
+  resources:
+  - instances/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - core.openeverest.io
+  resources:
+  - instances/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - core.openeverest.io
+  resources:
+  - providers
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - kubeai.org
+  resources:
+  - models
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - kubeai.org
+  resources:
+  - models/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - kubeai.org
+  resources:
+  - models/status
+  verbs:
+  - get

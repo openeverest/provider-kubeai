@@ -1,0 +1,7 @@
+.git
+.github
+.gitignore
+.dockerignore
+bin
+cover.out
+provider-kubeai

@@ -1,0 +1,24 @@
+apiVersion: k3d.io/v1alpha5
+kind: Simple
+metadata:
+  name: provider-kubeai-test
+servers: 1
+agents: 3
+image: rancher/k3s:v1.33.2-k3s1
+registries:
+  create:
+    name: k3d-registry
+    host: "0.0.0.0"
+    hostPort: "5000"
+options:
+  k3d:
+    wait: true
+    disableLoadbalancer: true
+  k3s:
+    extraArgs:
+      - arg: "--disable=traefik,metrics-server,servicelb"
+        nodeFilters:
+          - server:*
+      - arg: "--disable-network-policy"
+        nodeFilters:
+          - server:*
