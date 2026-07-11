@@ -5,7 +5,9 @@ import (
 	"strings"
 
 	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	kubeaiv1 "github.com/kubeai-project/kubeai/api/k8s/v1"
@@ -82,8 +84,12 @@ func (p *Provider) Validate(c *controller.Context) error {
 
 }
 
-// Sync builds the KubeAI Model CR from the Instance spec and applies it
-// c.Apply sets the owner reference , so the Model is garbage collected with the Instance
+// Sync ensures the KubeAI Model CR matches the Instance desired state.
+//
+// It uses CreateOrUpdate and only writes fields this provider owns. It never
+// touches Spec.Replicas — KubeAI's autoscaler owns that for scale-from-zero.
+// When desired fields are already correct, CreateOrUpdate is a no-op so we do
+// not bump generation or fight the model controller.
 func (p *Provider) Sync(c *controller.Context) error {
 	l := log.FromContext(c.Context())
 
@@ -99,27 +105,53 @@ func (p *Provider) Sync(c *controller.Context) error {
 	_ = c.TryDecodeTopologyConfig(&top)
 
 	var global definition.GlobalConfig
-	_ = c.DecodeGlobalConfig(&global)
+	_ = c.TryDecodeGlobalConfig(&global)
+
+	desiredURL := cs.Model.Source
+	desiredEngine := engineForSource(cs.Model.Source)
+	desiredFeatures := featuresForTask(global.Task)
+	desiredProfile := resourceProfile(cs, srv)
+	desiredMax := top.MaxReplicas
 
 	model := &kubeaiv1.Model{
-		ObjectMeta: c.ObjectMeta(c.Name()),
-		Spec: kubeaiv1.ModelSpec{
-			URL:                   cs.Model.Source,
-			Engine:                engineForSource(cs.Model.Source),
-			Features:              featuresForTask(global.Task),
-			ResourceProfile:       resourceProfile(cs, srv),
-			CacheProfile:          cs.CacheProfile,
-			Args:                  cs.Args,
-			Env:                   cs.Env,
-			MinReplicas:           top.MinReplicas,
-			MaxReplicas:           &top.MaxReplicas,
-			TargetRequests:        top.TargetRequests,
-			ScaleDownDelaySeconds: top.ScaleDownDelaySeconds, //default=30s
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      c.Name(),
+			Namespace: c.Namespace(),
 		},
 	}
 
-	l.Info("Syncing KubeAI Model", "name", model.Name, "url", model.Spec.URL, "engine", model.Spec.Engine)
-	return c.Apply(model)
+	op, err := controllerutil.CreateOrUpdate(c.Context(), c.Client(), model, func() error {
+		if model.Labels == nil {
+			model.Labels = map[string]string{}
+		}
+		model.Labels["app.kubernetes.io/managed-by"] = "everest"
+		model.Labels["app.kubernetes.io/instance"] = c.Name()
+
+		model.Spec.URL = desiredURL
+		model.Spec.Engine = desiredEngine
+		model.Spec.Features = desiredFeatures
+		model.Spec.ResourceProfile = desiredProfile
+		model.Spec.CacheProfile = cs.CacheProfile
+		model.Spec.Args = cs.Args
+		model.Spec.Env = cs.Env
+		model.Spec.MinReplicas = top.MinReplicas
+		model.Spec.MaxReplicas = &desiredMax
+		if top.TargetRequests != nil {
+			model.Spec.TargetRequests = top.TargetRequests
+		}
+		if top.ScaleDownDelaySeconds != nil {
+			model.Spec.ScaleDownDelaySeconds = top.ScaleDownDelaySeconds
+		}
+		// Spec.Replicas is owned by KubeAI — do not set or clear it.
+
+		return controllerutil.SetControllerReference(c.Instance(), model, c.Client().Scheme())
+	})
+	if err != nil {
+		return fmt.Errorf("sync KubeAI Model %q: %w", c.Name(), err)
+	}
+
+	l.Info("Synced KubeAI Model", "name", model.Name, "op", op, "url", desiredURL, "engine", desiredEngine)
+	return nil
 }
 
 // Status reads the KubeAI Model status and maps it to an Instance phase
@@ -145,8 +177,8 @@ func (p *Provider) Status(c *controller.Context) (controller.Status, error) {
 	}
 }
 
-// Cleanup handles deletion. The Model CR carries an owner reference set by
-// c.Apply, so Kubernetes garbage collection removes it with the Instance.
+// Cleanup handles deletion. The Model CR carries an owner reference set in
+// Sync, so Kubernetes garbage collection removes it with the Instance.
 func (p *Provider) Cleanup(c *controller.Context) error {
 	return nil
 }
