@@ -19,13 +19,6 @@ helm repo add kubeai https://www.kubeai.org && helm repo update
 helm upgrade --install kubeai kubeai/kubeai -n default --wait --timeout 10m
 ```
 
-GPU cluster: follow [docs/gpu-runbook.md](docs/gpu-runbook.md) and install KubeAI with:
-
-```sh
-helm upgrade --install kubeai kubeai/kubeai -n default \
-  -f deploy/kubeai/values-gpu.yaml --wait --timeout 10m
-```
-
 Generate Provider CR manifests (after changing `definition/` or RBAC):
 
 ```sh
