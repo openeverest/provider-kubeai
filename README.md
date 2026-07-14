@@ -10,11 +10,21 @@ OpenEverest provider that turns `Instance` CRs into [KubeAI](https://www.kubeai.
 - A Kubernetes cluster with OpenEverest `Instance` / `Provider` CRDs installed
 - [KubeAI](https://www.kubeai.org/) installed in the **same namespace** as your Instances (this repo’s examples use `default`)
 
-Local CPU cluster (KIND):
+Local CPU cluster — **KIND** ([docs/local-kind-runbook.md](docs/local-kind-runbook.md)):
 
 ```sh
 kind create cluster --name kubeai-test
-# Install OpenEverest CRDs from the pinned module version (see docs/local-kind-runbook.md)
+# Install OpenEverest CRDs from the pinned module version (see the KIND runbook)
+helm repo add kubeai https://www.kubeai.org && helm repo update
+helm upgrade --install kubeai kubeai/kubeai -n default --wait --timeout 10m
+```
+
+Or **k3d** with the checked-in config ([docs/local-k3d-runbook.md](docs/local-k3d-runbook.md)):
+
+```sh
+make k3d-cluster-up
+kubectl config use-context k3d-provider-kubeai-test
+# Install OpenEverest CRDs, then KubeAI (same as KIND runbook)
 helm repo add kubeai https://www.kubeai.org && helm repo update
 helm upgrade --install kubeai kubeai/kubeai -n default --wait --timeout 10m
 ```

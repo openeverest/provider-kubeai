@@ -2,6 +2,8 @@
 
 This runbook validates the complete `Instance -> KubeAI Model -> OpenAI-compatible request` path using an Ollama model on CPU. It deliberately installs KubeAI and the OpenEverest `Instance` in `default`: KubeAI serves `Model` resources from its own namespace, and this provider creates the `Model` in the same namespace as the `Instance`.
 
+Prefer k3d + Make targets instead? See [local-k3d-runbook.md](./local-k3d-runbook.md) (`dev/k3d.yaml`, `make k3d-cluster-up`).
+
 ## Prerequisites
 
 Run every command from the repository root.

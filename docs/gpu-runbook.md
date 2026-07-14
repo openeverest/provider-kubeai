@@ -4,7 +4,7 @@ End-to-end path for a **vLLM GPU** Instance on a real NVIDIA cluster:
 
 `Instance → provider Sync → KubeAI Model (VLLM) → GPU Pod → /openai/v1`
 
-This does **not** run on Mac KIND/k3d (no CUDA). Use [local-kind-runbook.md](./local-kind-runbook.md) for the CPU/Ollama path.
+This does **not** run on Mac KIND/k3d (no CUDA). Use [local-kind-runbook.md](./local-kind-runbook.md) or [local-k3d-runbook.md](./local-k3d-runbook.md) for the CPU/Ollama path.
 
 ## Manifests in this repo
 
@@ -164,10 +164,11 @@ Import `examples/observability/vllm-grafana-dashboard.json` into Grafana (port-f
 
 ## CPU vs GPU summary
 
-| | Local KIND | GPU cluster |
+| | Local KIND / k3d | GPU cluster |
 | --- | --- | --- |
 | Example | `examples/instance-simple.yaml` | `examples/instance-gpu.yaml` |
 | Engine | OLlama | VLLM |
 | Profile | `cpu:1` | `nvidia-gpu-l4:1` (or your profile) |
 | KubeAI values | chart defaults | `deploy/kubeai/values-gpu.yaml` |
+| Docs | [local-kind-runbook.md](./local-kind-runbook.md), [local-k3d-runbook.md](./local-k3d-runbook.md) | this file |
 | TTFT/ITL | not the production signal | vLLM `/metrics` + PodMonitor |
