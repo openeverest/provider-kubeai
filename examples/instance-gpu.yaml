@@ -1,0 +1,41 @@
+# GPU Instance — vLLM on NVIDIA (cloud GPU cluster required).
+# Does not run on Mac KIND/k3d (no CUDA).
+#
+# Prerequisites:
+#   1. Cluster with allocatable nvidia.com/gpu
+#   2. KubeAI installed with matching resourceProfiles (see deploy/kubeai/values-gpu.yaml)
+#   3. Provider running; Instance in the same namespace as KubeAI (default)
+#   4. For gated HF models: apply deploy/kubeai/hf-token-secret.yaml and set env below
+#
+# Docs: docs/gpu-runbook.md
+apiVersion: core.openeverest.io/v1alpha1
+kind: Instance
+metadata:
+  name: llama-3-8b
+  namespace: default
+spec:
+  provider: provider-kubeai
+  version: vllm-0.11.2
+  topology:
+    type: autoscaled
+    config:
+      minReplicas: 0
+      maxReplicas: 2
+  global:
+    task: TextGeneration
+  components:
+    server:
+      customSpec:
+        model:
+          source: hf://meta-llama/Llama-3.1-8B-Instruct
+          estimatedParamBillions: 8
+          quantization: fp16
+        resourceProfile: nvidia-gpu-l4:1
+        args:
+          - --max-model-len=8192
+        # Prefer mounting HF_TOKEN from a Secret once envFrom is wired in Sync.
+        # Until then, set the token via KubeAI/model pod env using the secret
+        # in deploy/kubeai/hf-token-secret.yaml (see gpu-runbook).
+      resources:
+        limits:
+          nvidia.com/gpu: "1"

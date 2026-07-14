@@ -1,0 +1,58 @@
+# KubeAI Helm values for GPU clusters.
+# Usage:
+#   helm upgrade --install kubeai kubeai/kubeai -n default \
+#     -f deploy/kubeai/values-gpu.yaml --wait --timeout 10m
+#
+# Edit resourceProfiles.*.nodeSelector / tolerations for your cloud.
+# Profile names must match Instance customSpec.resourceProfile (before ":count").
+# Example Instance uses: nvidia-gpu-l4:1
+
+# ---------------------------------------------------------------------------
+# Resource profiles — tune per cloud
+# ---------------------------------------------------------------------------
+resourceProfiles:
+  # NVIDIA L4 (common on GKE). Uncomment/adjust nodeSelector for your pool.
+  nvidia-gpu-l4:
+    imageName: nvidia-gpu
+    limits:
+      nvidia.com/gpu: "1"
+    requests:
+      nvidia.com/gpu: "1"
+      cpu: "2"
+      memory: "8Gi"
+    # GKE example:
+    # nodeSelector:
+    #   cloud.google.com/gke-accelerator: nvidia-l4
+    # tolerations:
+    #   - key: nvidia.com/gpu
+    #     operator: Exists
+    #     effect: NoSchedule
+
+  # Generic single-GPU profile when nodes only expose nvidia.com/gpu.
+  nvidia-gpu:
+    imageName: nvidia-gpu
+    limits:
+      nvidia.com/gpu: "1"
+    requests:
+      nvidia.com/gpu: "1"
+      cpu: "2"
+      memory: "8Gi"
+    tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
+
+  cpu:
+    imageName: cpu
+    requests:
+      cpu: "1"
+      memory: "2Gi"
+
+# ---------------------------------------------------------------------------
+# Observability — scrape vLLM /metrics when prometheus-operator is installed
+# ---------------------------------------------------------------------------
+metrics:
+  prometheusOperator:
+    vLLMPodMonitor:
+      enabled: true
+      labels: {}
