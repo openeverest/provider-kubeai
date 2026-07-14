@@ -69,6 +69,18 @@ curl http://127.0.0.1:8000/openai/v1/chat/completions \
 
 Use `/openai/v1/...` (not `/v1/...`). For the GPU example, set `"model":"llama-3-8b"`.
 
+### Observability (vLLM + Prometheus)
+
+On a GPU cluster, scrape vLLM metrics with kube-prometheus-stack and the KubeAI PodMonitor:
+
+```sh
+helm upgrade --install prometheus prometheus-community/kube-prometheus-stack \
+  -n monitoring --create-namespace \
+  -f deploy/observability/values-prometheus.yaml
+# KubeAI already enables the PodMonitor via deploy/kubeai/values-gpu.yaml
+```
+
+Import `examples/observability/vllm-grafana-dashboard.json` into Grafana. Full steps: [docs/observability.md](docs/observability.md).
 
 ## License
 
