@@ -8,7 +8,7 @@ For KIND instead, see [local-kind-runbook.md](./local-kind-runbook.md). GPU/vLLM
 
 | Path / target | Role |
 | --- | --- |
-| `dev/k3d.yaml` | k3d cluster config (`provider-kubeai-test`, local registry `:5000`) |
+| `dev/k3d.yaml` | k3d cluster config (`provider-kubeai-test`, local registry `:5001`) |
 | `make k3d-cluster-up` | Create the cluster |
 | `make k3d-cluster-down` | Delete the cluster |
 | `make k3d-cluster-reset` | Delete + recreate |
@@ -17,7 +17,7 @@ For KIND instead, see [local-kind-runbook.md](./local-kind-runbook.md). GPU/vLLM
 Cluster layout from `dev/k3d.yaml`:
 
 - 1 server + 3 agents (k3s `v1.33.2-k3s1`)
-- Embedded registry `k3d-registry` on host port `5000`
+- Embedded registry `k3d-registry` on host port `5001`
 - Traefik, metrics-server, and servicelb disabled
 - Load balancer disabled — use `kubectl port-forward` for APIs
 
@@ -176,7 +176,7 @@ kubectl logs -n default deployment/provider-kubeai -f
 
 Then re-apply `examples/instance-simple.yaml` and repeat the API checks.
 
-The cluster also creates a registry on `localhost:5000` (`k3d-registry`). You can push there instead of `k3d image import` if you prefer tag/push workflows.
+The cluster also creates a registry on `localhost:5001` (`k3d-registry`). You can push there instead of `k3d image import` if you prefer tag/push workflows.
 
 ## Cleanup
 

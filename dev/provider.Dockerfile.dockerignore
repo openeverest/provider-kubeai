@@ -1,0 +1,11 @@
+# Dockerignore for the Tilt dev image (dev/provider.Dockerfile).
+#
+# BuildKit prefers <dockerfile>.dockerignore over the top-level .dockerignore.
+# The dev image COPYs the host-built bin/provider, so - unlike the production
+# build - we must NOT exclude bin here. Tilt further narrows the context via
+# only=['bin/provider'], so everything else is irrelevant to this image.
+.git
+.github
+.gitignore
+cover.out
+provider-kubeai

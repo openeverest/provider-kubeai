@@ -6,3 +6,6 @@
 .DS_Store
 .idea/
 .vscode/
+
+# Tilt local config (may contain tokens).
+dev/.env
