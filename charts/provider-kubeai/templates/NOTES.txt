@@ -10,7 +10,7 @@
   echo http://$SERVICE_IP:{{ .Values.service.port }}
 {{- else if contains "ClusterIP" .Values.service.type }}
   kubectl --namespace {{ .Release.Namespace }} port-forward svc/{{ include "provider-kubeai.fullname" . }} {{ .Values.service.port }}:{{ .Values.service.port }}
-  echo "Visit http://127.0.0.1:{{ .Values.service.port }}/schema to access the provider schema endpoint"
+  echo "Visit http://127.0.0.1:{{ .Values.service.port }}/healthz to check the provider health endpoint"
 {{- end }}
 
 2. The Provider custom resource "{{ .Values.provider.name }}" has been created.

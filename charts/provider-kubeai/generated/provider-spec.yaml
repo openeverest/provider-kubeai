@@ -58,6 +58,104 @@ spec:
             format: int32
             type: integer
         type: object
+  uiSchema:
+    autoscaled:
+      sections:
+        model:
+          components:
+            args:
+              fieldParams:
+                label: Engine arguments
+                maxRows: 6
+                minRows: 2
+                multiline: true
+                placeholder: --max-model-len=8192
+              path: spec.components.server.customSpec.args
+              uiType: text
+            source:
+              fieldParams:
+                label: Model source
+                placeholder: hf://meta-llama/Llama-3.1-8B-Instruct
+              path: spec.components.server.customSpec.model.source
+              uiType: text
+              validation:
+                regex:
+                  message: Must start with hf://, pvc://, ollama://, s3://, gs:// or oss://
+                  pattern: ^(hf|pvc|ollama|s3|gs|oss)://.+$
+                required: true
+            version:
+              fieldParams:
+                label: Engine version
+                modes:
+                  edit:
+                    disabled: true
+                optionsPath: spec.versions
+                optionsPathConfig:
+                  labelPath: name
+                  valuePath: name
+              path: spec.version
+              uiType: select
+              validation:
+                required: true
+          componentsOrder:
+            - version
+            - source
+            - args
+          description: Choose the model and engine version to serve.
+          label: Model
+        resources:
+          components:
+            resourceProfile:
+              fieldParams:
+                defaultValue: cpu:1
+                label: Resource profile
+                placeholder: nvidia-gpu-l4:1
+              path: spec.components.server.customSpec.resourceProfile
+              uiType: text
+              validation:
+                required: true
+          componentsOrder:
+            - resourceProfile
+          description: Configure the hardware the inference server runs on.
+          label: Resources
+        scaling:
+          components:
+            replicas:
+              components:
+                maxReplicas:
+                  fieldParams:
+                    defaultValue: 4
+                    label: Max replicas
+                  path: spec.topology.config.maxReplicas
+                  uiType: number
+                  validation:
+                    celExpressions:
+                      - celExpr: spec.topology.config.maxReplicas >= spec.topology.config.minReplicas
+                        message: Max replicas must be >= min replicas
+                    int: true
+                    min: 1
+                    required: true
+                minReplicas:
+                  fieldParams:
+                    defaultValue: 0
+                    label: Min replicas
+                  path: spec.topology.config.minReplicas
+                  uiType: number
+                  validation:
+                    int: true
+                    min: 0
+                    required: true
+              componentsOrder:
+                - minReplicas
+                - maxReplicas
+              groupType: line
+              uiType: group
+          description: Configure request-based autoscaling for the inference server.
+          label: Scaling
+      sectionsOrder:
+        - model
+        - scaling
+        - resources
   versions:
     - components:
         server: 0.11.2

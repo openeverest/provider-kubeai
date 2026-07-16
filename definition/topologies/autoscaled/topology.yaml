@@ -3,7 +3,7 @@
 #
 # config.components: Which components are used and their defaults.
 # config.configSchema: Reference a Go type for custom topology config fields.
-# ui: have to discuss wih frontend team TODO
+# ui: Rendering hints for the Everest frontend form (inlined as spec.uiSchema.autoscaled).
 
 config:
     configSchema: AutoScaledTopologyConfig
@@ -11,3 +11,101 @@ config:
         server:
             defaults:
                 replicas: 1
+
+ui:
+    sections:
+        model:
+            label: Model
+            description: Choose the model and engine version to serve.
+            components:
+                version:
+                    path: spec.version
+                    uiType: select
+                    fieldParams:
+                        label: Engine version
+                        optionsPath: spec.versions
+                        optionsPathConfig:
+                            labelPath: name
+                            valuePath: name
+                        modes:
+                            edit:
+                                disabled: true
+                    validation:
+                        required: true
+                source:
+                    path: spec.components.server.customSpec.model.source
+                    uiType: text
+                    fieldParams:
+                        label: Model source
+                        placeholder: hf://meta-llama/Llama-3.1-8B-Instruct
+                    validation:
+                        required: true
+                        regex:
+                            pattern: ^(hf|pvc|ollama|s3|gs|oss)://.+$
+                            message: Must start with hf://, pvc://, ollama://, s3://, gs:// or oss://
+                args:
+                    path: spec.components.server.customSpec.args
+                    uiType: text
+                    fieldParams:
+                        label: Engine arguments
+                        placeholder: --max-model-len=8192
+                        multiline: true
+                        minRows: 2
+                        maxRows: 6
+            componentsOrder:
+                - version
+                - source
+                - args
+        scaling:
+            label: Scaling
+            description: Configure request-based autoscaling for the inference server.
+            components:
+                replicas:
+                    uiType: group
+                    groupType: line
+                    components:
+                        minReplicas:
+                            path: spec.topology.config.minReplicas
+                            uiType: number
+                            fieldParams:
+                                label: Min replicas
+                                defaultValue: 0
+                            validation:
+                                required: true
+                                int: true
+                                min: 0
+                        maxReplicas:
+                            path: spec.topology.config.maxReplicas
+                            uiType: number
+                            fieldParams:
+                                label: Max replicas
+                                defaultValue: 4
+                            validation:
+                                required: true
+                                int: true
+                                min: 1
+                                celExpressions:
+                                    - celExpr: spec.topology.config.maxReplicas >= spec.topology.config.minReplicas
+                                      message: Max replicas must be >= min replicas
+                    componentsOrder:
+                        - minReplicas
+                        - maxReplicas
+        resources:
+            label: Resources
+            description: Configure the hardware the inference server runs on.
+            components:
+                resourceProfile:
+                    path: spec.components.server.customSpec.resourceProfile
+                    uiType: text
+                    fieldParams:
+                        label: Resource profile
+                        placeholder: nvidia-gpu-l4:1
+                        defaultValue: cpu:1
+                    validation:
+                        required: true
+            componentsOrder:
+                - resourceProfile
+    sectionsOrder:
+        - model
+        - scaling
+        - resources
