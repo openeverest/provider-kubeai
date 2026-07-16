@@ -57,6 +57,35 @@ make dev-down      # stop Tilt (keeps the cluster)
 make dev-destroy   # stop Tilt and delete the cluster
 ```
 
+## Troubleshooting
+
+### `docker-credential-osxkeychain: executable file not found in $PATH`
+
+Tilt fails while pulling `debian:bookworm-slim` with:
+
+```text
+error getting credentials - err: exec: "docker-credential-osxkeychain": executable file not found in $PATH
+```
+
+`~/.docker/config.json` points at Docker Desktop's macOS credential helper, but
+that binary is not on your shell `PATH` (common when Docker Engine is installed
+via Homebrew while Docker Desktop is also present).
+
+**Quick fix for this session:**
+
+```sh
+export PATH="/Applications/Docker.app/Contents/Resources/bin:$PATH"
+make dev-up
+```
+
+`make dev-up` also prepends that directory automatically when the helper exists.
+
+**Permanent fix (pick one):**
+
+- Add the `export PATH=...` line to your shell profile (`~/.zshrc`), or
+- Remove `"credsStore": "osxkeychain"` from `~/.docker/config.json` if you only
+  pull public images and do not use private registries.
+
 ## Configuration
 
 All settings live in `dev/.env` (see `dev/.env.example`). Common options:

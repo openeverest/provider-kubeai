@@ -117,8 +117,12 @@ test-integration: ## Report integration-test setup status.
 
 .PHONY: k3d-cluster-up
 k3d-cluster-up: ## Create a local k3d cluster for development.
-	$(info Creating k3d cluster for testing)
-	k3d cluster create --config ./dev/k3d.yaml
+	@if k3d cluster list --no-headers 2>/dev/null | awk '{print $$1}' | grep -qx 'provider-kubeai-test'; then \
+		echo "k3d cluster 'provider-kubeai-test' already exists, skipping create"; \
+	else \
+		echo "Creating k3d cluster for testing"; \
+		k3d cluster create --config ./dev/k3d.yaml; \
+	fi
 
 .PHONY: k3d-cluster-down
 k3d-cluster-down: ## Delete the local k3d cluster.
@@ -132,6 +136,13 @@ k3d-cluster-reset: k3d-cluster-down k3d-cluster-up ## Reset the local k3d cluste
 
 # Tiltfile used by the dev targets.
 DEV_TILTFILE ?= ./dev/Tiltfile
+
+# Docker Desktop's credential helper is referenced in ~/.docker/config.json but
+# is not always on PATH when using Homebrew Docker. Prepend it when present so
+# Tilt can pull base images (e.g. debian:bookworm-slim).
+DOCKER_DESKTOP_BIN ?= /Applications/Docker.app/Contents/Resources/bin
+DEV_PATH := $(if $(wildcard $(DOCKER_DESKTOP_BIN)/docker-credential-osxkeychain),$(DOCKER_DESKTOP_BIN):)$(PATH)
+export PATH := $(DEV_PATH)
 
 .PHONY: dev-up
 dev-up: k3d-cluster-up ## Create the k3d cluster and start the Tilt dev environment.
