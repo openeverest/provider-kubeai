@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: KubeAI docs
+    url: https://www.kubeai.org/
+    about: Upstream KubeAI docs and Kubernetes API reference.
+  - name: OpenEverest
+    url: https://github.com/openeverest
+    about: OpenEverest core and related providers.

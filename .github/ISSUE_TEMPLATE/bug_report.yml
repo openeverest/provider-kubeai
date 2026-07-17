@@ -1,0 +1,56 @@
+name: Bug report
+description: Report something broken or unexpected
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Provider Sync / Status / Validate
+        - Helm / install
+        - UI / Instance form
+        - Scale-to-zero / autoscaling
+        - Inference API
+        - Local dev (Tilt / k3d / Kind)
+        - Docs
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened vs what you expected.
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Repro
+      description: Minimal steps.
+      placeholder: |
+        1. …
+        2. …
+        3. …
+    validations:
+      required: true
+
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      placeholder: |
+        provider-kubeai / OpenEverest / KubeAI / k8s versions; install path (Tilt, Helm, make run)
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Logs, kubectl output, Instance/Model YAML (redact secrets). Optional.
+      render: shell
