@@ -6,7 +6,7 @@ that turns `Instance` CRs into [KubeAI](https://www.kubeai.org/) `Model` CRs.
 | Name | GitHub |
 |---|---|
 | Atharva Mhaske | [@atharvamhaske](https://github.com/atharvamhaske) |
-| Sergey Pronin | [@s-pronin](https://github.com/s-pronin) |
+| Sergey Pronin | [@s-pronin](https://github.com/spron-in) |
 
 ## Responsibilities
 
