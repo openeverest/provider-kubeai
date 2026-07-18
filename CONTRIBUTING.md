@@ -75,6 +75,9 @@ helps route the issue to the right place.
 - **[openeverest/provider-sdk](https://github.com/openeverest/provider-sdk)** — the SDK
   used by `gen.go`'s `go:generate` directive to turn `definition/` into the Provider CR
   spec and Helm chart.
+- **[kubeai-project/kubeai](https://github.com/kubeai-project/kubeai)** — the KubeAI
+  operator this provider manages `Model` CRs for (vLLM/Ollama serving, scale-to-zero
+  autoscaling); see also [kubeai.org](https://www.kubeai.org/).
 - **[openeverest/specs](https://github.com/openeverest/specs)** — OpenEverest Specs, the
   central hub for proposing, defining, and archiving significant features and
   architectural decisions across the project. Use it for major proposals, architecture
