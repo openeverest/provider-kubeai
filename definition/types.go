@@ -1,4 +1,4 @@
-//Package definition contains shared types used across the provider definitions
+// Package definition contains shared types used across the provider definitions
 
 // +k8s:openapi-gen=true
 package definition
@@ -8,8 +8,8 @@ type TopologyType string
 
 const (
 	// TopologyAutoscaled deploys an inference server that scales between
-	// minReplicas and maxReplicas based on requesr load (KubeAI autoscaler)
-	TopologyAutoSsaled TopologyType = "autoscaled"
+	// minReplicas and maxReplicas based on request load (KubeAI autoscaler)
+	TopologyAutoscaled TopologyType = "autoscaled"
 )
 
 // GlobalConfig maps to Instance.spec.global.

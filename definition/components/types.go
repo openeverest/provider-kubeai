@@ -13,7 +13,7 @@ package components
 // generic Instance component spec of OpenEverest (replicas/resources/storage/version).
 
 type VllmCustomSpec struct {
-	// Model describe the model artifact to serve
+	// Model describes the model artifact to serve
 	Model ModelSpec `json:"model"`
 
 	// Args are extra engine flags appended
@@ -23,15 +23,15 @@ type VllmCustomSpec struct {
 	// Env variables to be added to the server process
 	Env map[string]string `json:"env,omitempty"`
 
-	// ResourceProfile is the KubeAI resource profile in the fomr
-	// "<profile-name>:<count>", e.g. "cpu:2" or "nvidia-gpu-14:1"
+	// ResourceProfile is the KubeAI resource profile in the form
+	// "<profile-name>:<count>", e.g. "cpu:2" or "nvidia-gpu-l4:1"
 	ResourceProfile string `json:"resourceProfile,omitempty"`
 
 	// CacheProfile enables model artifact caching using a KubeAI CacheProfile
 	CacheProfile string `json:"cacheProfile,omitempty"`
 }
 
-// ModelSpec describes where the model weights actually comes from and hints for placement validation
+// ModelSpec describes where the model weights actually come from and hints for placement validation
 // for e.g; vllm: "hf://<repo_name>/<model>", "pvc://<name>", or "s3://..."
 // we can also serve ollama for dev testing of entire provider flow which can run on CPU
 // without need of GPUs e.g; Ollama: "ollama://<model>"
@@ -44,6 +44,6 @@ type ModelSpec struct {
 	EstimatedParamBillions *int32 `json:"estimatedParamBillions,omitempty"`
 
 	// Quantization declares the weight precision for the fit heuristic.
-	// +kubebuilder:validation:Enum=fp16;int9,int4
+	// +kubebuilder:validation:Enum=fp16;int8;int4
 	Quantization string `json:"quantization,omitempty"`
 }

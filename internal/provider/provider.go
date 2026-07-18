@@ -24,7 +24,7 @@ import (
 var _ controller.ProviderInterface = (*Provider)(nil)
 
 // Provider implements controller.ProviderInterface for the provider-kubeai provider
-// This transaltes OpenEverest Instance CRs into KubeAI Model CRs
+// This translates OpenEverest Instance CRs into KubeAI Model CRs
 type Provider struct {
 	controller.BaseProvider
 }

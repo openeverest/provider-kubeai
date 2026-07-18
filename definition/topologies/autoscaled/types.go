@@ -1,8 +1,8 @@
-// Package autoscaled contains custom spec types for autoscales topology
+// Package autoscaled contains custom spec types for the autoscaled topology
 // +k8s:openapi-gen=true
 package autoscaled
 
-// AutoScaledToplogyConfig maps to Instance.spec.topology.config for the autoscaled topology.
+// AutoScaledTopologyConfig maps to Instance.spec.topology.config for the autoscaled topology.
 // It configures Kube-AI request based autoscaler capped between minReplicas to maxReplicas
 type AutoScaledTopologyConfig struct {
 	// MinReplicas is the lower bound of server pods. zero here as it enables scale-to-zero
@@ -15,7 +15,7 @@ type AutoScaledTopologyConfig struct {
 
 	// TargetRequests is the avg no. of in flight requests per pod the autoscaler tries to maintain,
 	// Default for KubeAI is 100
-	// +k8sbuilder:validation:Minimum=1
+	// +kubebuilder:validation:Minimum=1
 	TargetRequests *int32 `json:"targetRequests,omitempty"`
 
 	// ScaleDownDelaySeconds is the minimum time before scaling down after the
