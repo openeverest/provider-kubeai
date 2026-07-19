@@ -2,6 +2,36 @@
 
 OpenEverest provider that turns `Instance` CRs into [KubeAI](https://www.kubeai.org/) `Model` CRs for LLM serving (vLLM on GPU, Ollama on CPU for local demos).
 
+## Installation
+
+The provider chart is published as an OCI artifact to the GitHub Container
+Registry. [KubeAI](https://www.kubeai.org/) itself is not bundled — install it
+separately (see the Quick Start below) before or alongside the provider.
+
+```bash
+helm install provider-kubeai \
+  oci://ghcr.io/openeverest/charts/provider-kubeai \
+  --version 0.1.0 \
+  --create-namespace
+```
+
+Upgrade to a newer chart version:
+
+```bash
+helm upgrade provider-kubeai \
+  oci://ghcr.io/openeverest/charts/provider-kubeai \
+  --version 0.1.0
+```
+
+Uninstall:
+
+```bash
+helm uninstall provider-kubeai
+```
+
+> Browse available versions on the
+> [chart package page](https://github.com/openeverest/provider-kubeai/pkgs/container/charts%2Fprovider-kubeai).
+
 ## Quick Start
 
 ### Prerequisites
