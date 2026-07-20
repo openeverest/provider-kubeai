@@ -14,7 +14,7 @@ componentTypes:
             - version: "0.10.1"
               image: vllm/vllm-openai:v0.10.1
             # CPU-friendly engine release for local development.
-            # KubeAI's OLlama engine is selected via the customSpec model source
+            # KubeAI's OLlama engine is selected via the parameters model source
             # (ollama://...), the image below is the matching Ollama release.
             - version: "0.11.11-ollama"
               image: ollama/ollama:0.11.11

@@ -12,8 +12,8 @@ const (
 	TopologyAutoscaled TopologyType = "autoscaled"
 )
 
-// GlobalConfig maps to Instance.spec.global.
-type GlobalConfig struct {
+// Parameters maps to Instance.spec.parameters.
+type Parameters struct {
 	// Task selects the model capability, which dictates openAI compatible APIs exposed for the model
 	// +kubebuilder:validation:Enum=TextGeneration;TextEmbedding;SpeechToText
 	Task string `json:"task,omitempty"`

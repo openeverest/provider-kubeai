@@ -5,8 +5,8 @@ name: provider-kubeai
 
 # The single logical component of an LLM deployment: the inference server
 # Its type is vllm(underlying software), and its free-form configuration
-# model source, engine is described by VllmCustomSpec in definitions/components/types.go
+# model source, engine is described by VllmParameters in definitions/components/types.go
 components:
     server:
         type: vllm
-        customSpecSchema: VllmCustomSpec
+        parametersSchema: VllmParameters

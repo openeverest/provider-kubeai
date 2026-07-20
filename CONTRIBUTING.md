@@ -8,7 +8,7 @@ on CPU). See [README.md](README.md) for what it does and how to run it locally.
 ## Before you start
 
 - For small fixes (typos, docs, small bugs), just open a PR.
-- For larger changes (new topology, new component customSpec fields, changes to
+- For larger changes (new topology, new component parameters fields, changes to
   what this provider owns on the KubeAI `Model`), open an issue first using the
   [feature request template](.github/ISSUE_TEMPLATE/feature_request.yml) so we can
   align on approach before you invest the work.
@@ -34,7 +34,7 @@ Try it end-to-end with the example Instances in `examples/` (see README's
 ## Making changes
 
 - **Provider logic** (`Validate`/`Sync`/`Status`/`Cleanup`) lives in `internal/provider/`.
-- **Public schema** (topology config, global config, component customSpec) lives in
+- **Public schema** (topology, instance-wide, and component parameters) lives in
   `definition/` and is tagged with `+kubebuilder:validation` / `+k8s:openapi-gen=true`
   markers — these generate the Helm chart's CRD schema, so typos in markers fail silently
   rather than erroring.

@@ -1,4 +1,4 @@
-// Package components contains custom spec types for provider component types.
+// Package components contains parameters types for provider component types.
 //
 // Each struct here corresponds to a component type defined in versions.yaml
 // and is converted to an OpenAPI schema during generation.
@@ -8,11 +8,11 @@
 // +k8s:openapi-gen=true
 package components
 
-// VllmCustomSpec maps to Instance.spec.components.server.customSpec.
+// VllmParameters maps to Instance.spec.components.server.parameters.
 // It carries the LLM-specific configuration that has no equivalent in the
 // generic Instance component spec of OpenEverest (replicas/resources/storage/version).
 
-type VllmCustomSpec struct {
+type VllmParameters struct {
 	// Model describes the model artifact to serve
 	Model ModelSpec `json:"model"`
 
