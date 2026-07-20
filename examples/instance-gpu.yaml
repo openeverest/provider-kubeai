@@ -14,7 +14,8 @@ metadata:
   name: llama-3-8b
   namespace: default
 spec:
-  provider: provider-kubeai
+  providerRef:
+    name: provider-kubeai
   version: vllm-0.11.2
   topology:
     type: autoscaled
