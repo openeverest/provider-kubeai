@@ -13,51 +13,53 @@ spec:
           version: 0.11.11-ollama
   components:
     server:
-      customSpecSchema:
-        properties:
-          args:
-            items:
-              type: string
-            type: array
-          cacheProfile:
-            type: string
-          env:
-            additionalProperties:
-              type: string
-            type: object
-          model:
-            properties:
-              estimatedParamBillions:
-                format: int32
-                type: integer
-              quantization:
+      parametersSchema:
+        openAPIV3Schema:
+          properties:
+            args:
+              items:
                 type: string
-              source:
+              type: array
+            cacheProfile:
+              type: string
+            env:
+              additionalProperties:
                 type: string
-            type: object
-          resourceProfile:
-            type: string
-        type: object
+              type: object
+            model:
+              properties:
+                estimatedParamBillions:
+                  format: int32
+                  type: integer
+                quantization:
+                  type: string
+                source:
+                  type: string
+              type: object
+            resourceProfile:
+              type: string
+          type: object
       type: vllm
   topologies:
     autoscaled:
       components:
         server: {}
-      configSchema:
-        properties:
-          maxReplicas:
-            format: int32
-            type: integer
-          minReplicas:
-            format: int32
-            type: integer
-          scaleDownDelaySeconds:
-            format: int64
-            type: integer
-          targetRequests:
-            format: int32
-            type: integer
-        type: object
+      parametersSchema:
+        openAPIV3Schema:
+          properties:
+            maxReplicas:
+              format: int32
+              type: integer
+            minReplicas:
+              format: int32
+              type: integer
+            scaleDownDelaySeconds:
+              format: int64
+              type: integer
+            targetRequests:
+              format: int32
+              type: integer
+          type: object
   uiSchema:
     autoscaled:
       sections:
@@ -70,13 +72,13 @@ spec:
                 minRows: 2
                 multiline: true
                 placeholder: --max-model-len=8192
-              path: spec.components.server.customSpec.args
+              path: spec.components.server.parameters.args
               uiType: text
             source:
               fieldParams:
                 label: Model source
                 placeholder: hf://meta-llama/Llama-3.1-8B-Instruct
-              path: spec.components.server.customSpec.model.source
+              path: spec.components.server.parameters.model.source
               uiType: text
               validation:
                 regex:
@@ -110,7 +112,7 @@ spec:
                 defaultValue: cpu:1
                 label: Resource profile
                 placeholder: nvidia-gpu-l4:1
-              path: spec.components.server.customSpec.resourceProfile
+              path: spec.components.server.parameters.resourceProfile
               uiType: text
               validation:
                 required: true
@@ -126,11 +128,11 @@ spec:
                   fieldParams:
                     defaultValue: 4
                     label: Max replicas
-                  path: spec.topology.config.maxReplicas
+                  path: spec.topology.parameters.maxReplicas
                   uiType: number
                   validation:
                     celExpressions:
-                      - celExpr: spec.topology.config.maxReplicas >= spec.topology.config.minReplicas
+                      - celExpr: spec.topology.parameters.maxReplicas >= spec.topology.parameters.minReplicas
                         message: Max replicas must be >= min replicas
                     int: true
                     min: 1
@@ -139,7 +141,7 @@ spec:
                   fieldParams:
                     defaultValue: 0
                     label: Min replicas
-                  path: spec.topology.config.minReplicas
+                  path: spec.topology.parameters.minReplicas
                   uiType: number
                   validation:
                     int: true

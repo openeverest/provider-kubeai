@@ -9,12 +9,12 @@ spec:
     name: provider-kubeai
   topology:
     type: autoscaled
-    config:
+    parameters:
       minReplicas: 1
       maxReplicas: 1
   components:
     server:
-      customSpec:
+      parameters:
         model:
           source: ollama://qwen2:0.5b
         resourceProfile: cpu:1

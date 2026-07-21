@@ -55,27 +55,27 @@ func (p *Provider) Validate(c *controller.Context) error {
 		return fmt.Errorf("component.%s is required", common.ComponentServer)
 	}
 
-	var cs components.VllmCustomSpec
-	if err := c.DecodeComponentCustomSpec(
+	var cs components.VllmParameters
+	if err := c.DecodeComponentParameters(
 		srv,
 		&cs,
 	); err != nil {
-		return fmt.Errorf("components.%s.customSpec is required : %w", common.ComponentServer, err)
+		return fmt.Errorf("components.%s.parameters is required : %w", common.ComponentServer, err)
 	}
 
 	if cs.Model.Source == "" {
-		return fmt.Errorf("components.%s.customSpec.model.source is required", common.ComponentServer)
+		return fmt.Errorf("components.%s.parameters.model.source is required", common.ComponentServer)
 	}
-	
+
 	if engineForSource(cs.Model.Source) == "" {
 		return fmt.Errorf("model.source must start with hf://, pvc://, ollama://, s3://, gs:// or oss://")
 	}
 
 	// AutoScaled Topology validator for min and max replicas count
-	var topo autoscaled.AutoScaledTopologyConfig
-	if c.TryDecodeTopologyConfig(&topo) {
+	var topo autoscaled.AutoScaledTopologyParameters
+	if c.TryDecodeTopologyParameters(&topo) {
 		if topo.MaxReplicas < topo.MinReplicas {
-			return fmt.Errorf("topology.config.maxReplicas (%d) must be >= minReplicas (%d)",
+			return fmt.Errorf("topology.parameters.maxReplicas (%d) must be >= minReplicas (%d)",
 				topo.MaxReplicas, topo.MinReplicas)
 		}
 	}
@@ -95,21 +95,21 @@ func (p *Provider) Sync(c *controller.Context) error {
 
 	srv := c.Instance().Spec.Components[common.ComponentServer]
 
-	var cs components.VllmCustomSpec
-	_ = c.TryDecodeComponentCustomSpec(srv, &cs)
+	var cs components.VllmParameters
+	_ = c.TryDecodeComponentParameters(srv, &cs)
 
-	top := autoscaled.AutoScaledTopologyConfig{
+	top := autoscaled.AutoScaledTopologyParameters{
 		MinReplicas: 0,
 		MaxReplicas: 1,
 	}
-	_ = c.TryDecodeTopologyConfig(&top)
+	_ = c.TryDecodeTopologyParameters(&top)
 
-	var global definition.GlobalConfig
-	_ = c.TryDecodeGlobalConfig(&global)
+	var params definition.Parameters
+	_ = c.TryDecodeParameters(&params)
 
 	desiredURL := cs.Model.Source
 	desiredEngine := engineForSource(cs.Model.Source)
-	desiredFeatures := featuresForTask(global.Task)
+	desiredFeatures := featuresForTask(params.Task)
 	desiredProfile := resourceProfile(cs, srv)
 	desiredMax := top.MaxReplicas
 
@@ -220,7 +220,7 @@ func engineForSource(source string) string {
 	}
 }
 
-// featuresForTask maps the global task config to KubeAI model features.
+// featuresForTask maps the instance-wide task parameter to KubeAI model features.
 func featuresForTask(task string) []kubeaiv1.ModelFeature {
 	switch task {
 	case "TextEmbedding":
@@ -233,9 +233,9 @@ func featuresForTask(task string) []kubeaiv1.ModelFeature {
 }
 
 // resourceProfile returns the KubeAI resource profile for the server.
-// An explicit customSpec.resourceProfile wins; otherwise it is derived from
+// An explicit parameters.resourceProfile wins; otherwise it is derived from
 // the GPU count in the component resources ("cpu:1" when no GPU is requested).
-func resourceProfile(cs components.VllmCustomSpec, srv corev1alpha1.ComponentSpec) string {
+func resourceProfile(cs components.VllmParameters, srv corev1alpha1.ComponentSpec) string {
 	if cs.ResourceProfile != "" {
 		return cs.ResourceProfile
 	}

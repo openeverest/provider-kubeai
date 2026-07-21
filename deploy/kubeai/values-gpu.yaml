@@ -4,7 +4,7 @@
 #     -f deploy/kubeai/values-gpu.yaml --wait --timeout 10m
 #
 # Edit resourceProfiles.*.nodeSelector / tolerations for your cloud.
-# Profile names must match Instance customSpec.resourceProfile (before ":count").
+# Profile names must match Instance parameters.resourceProfile (before ":count").
 # Example Instance uses: nvidia-gpu-l4:1
 
 # ---------------------------------------------------------------------------

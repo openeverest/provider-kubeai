@@ -19,14 +19,14 @@ spec:
   version: vllm-0.11.2
   topology:
     type: autoscaled
-    config:
+    parameters:
       minReplicas: 0
       maxReplicas: 2
-  global:
+  parameters:
     task: TextGeneration
   components:
     server:
-      customSpec:
+      parameters:
         model:
           source: hf://meta-llama/Llama-3.1-8B-Instruct
           estimatedParamBillions: 8

@@ -1,10 +1,10 @@
-// Package autoscaled contains custom spec types for the autoscaled topology
+// Package autoscaled contains parameters types for the autoscaled topology
 // +k8s:openapi-gen=true
 package autoscaled
 
-// AutoScaledTopologyConfig maps to Instance.spec.topology.config for the autoscaled topology.
+// AutoScaledTopologyParameters maps to Instance.spec.topology.parameters for the autoscaled topology.
 // It configures Kube-AI request based autoscaler capped between minReplicas to maxReplicas
-type AutoScaledTopologyConfig struct {
+type AutoScaledTopologyParameters struct {
 	// MinReplicas is the lower bound of server pods. zero here as it enables scale-to-zero
 	// +kubebuilder:validation:Minimum=0
 	MinReplicas int32 `json:"minReplicas"`
