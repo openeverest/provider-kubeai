@@ -5,7 +5,8 @@ kind: Instance
 metadata:
   name: qwen2-05b-cpu
 spec:
-  provider: provider-kubeai
+  providerRef:
+    name: provider-kubeai
   topology:
     type: autoscaled
     config:
