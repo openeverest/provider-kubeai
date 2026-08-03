@@ -109,6 +109,12 @@ curl http://127.0.0.1:8000/openai/v1/chat/completions \
 
 Use `/openai/v1/...` (not `/v1/...`). For the GPU example, set `"model":"llama-3-8b"`.
 
+### Curated model catalog
+
+An Admin can pre-define a fixed list of models at Helm install time (`values.yaml`
+`modelCatalog`), so users pick a model from the Everest UI instead of writing Instance
+YAML by hand. See [docs/model-catalog.md](docs/model-catalog.md).
+
 ### Observability (vLLM + Prometheus)
 
 On a GPU cluster, scrape vLLM metrics with kube-prometheus-stack and the KubeAI PodMonitor:
