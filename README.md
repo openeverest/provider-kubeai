@@ -177,25 +177,18 @@ The technology-specific knobs worth knowing about, all on the `server` component
 ## Development
 
 Requires Go (see [go.mod](go.mod)), Docker, Helm, kubectl, and a Kubernetes cluster you can
-reach. For local development we recommend [k3d](https://k3d.io) — `make dev-up` creates the
-cluster for you. Step-by-step runbooks: [k3d](docs/local-k3d-runbook.md),
-[kind](docs/local-kind-runbook.md), [GPU](docs/gpu-runbook.md).
+reach. [dev/README.md](dev/README.md) covers the environment end to end: the recommended
+local k3d setup, running against a cluster you already have, and every `dev/.env` setting.
+Step-by-step runbooks: [k3d](docs/local-k3d-runbook.md), [kind](docs/local-kind-runbook.md),
+[GPU](docs/gpu-runbook.md).
 
 ```bash
-make dev-up             # local k3d cluster + Tilt dev environment
+make dev-up             # local cluster + Tilt dev environment (see dev/README.md)
 make generate           # RBAC, provider spec, Helm chart sync
 make run                # run the provider locally against the cluster
 make test               # unit tests
 make test-integration   # chainsaw suites
 make dev-down
-```
-
-To work against a cluster you already have — kind, GKE, a shared dev cluster — skip
-`make dev-up` and point Tilt at it:
-
-```bash
-cp dev/.env.example dev/.env   # set K8S_CONTEXT, and DOCKER_REGISTRY_URL for a remote registry
-tilt up -f dev/Tiltfile
 ```
 
 `make help` lists every target. `make verify` fails when generated files are stale — run

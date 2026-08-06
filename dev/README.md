@@ -86,6 +86,19 @@ make dev-up
 - Remove `"credsStore": "osxkeychain"` from `~/.docker/config.json` if you only
   pull public images and do not use private registries.
 
+## Using a cluster you already have
+
+`make dev-up` creates a local k3d cluster, which is what we recommend for day-to-day
+work. Development itself only needs *a* cluster, though - kind, GKE, or a shared dev
+cluster work just as well, and are often faster for multi-node testing. Skip
+`make dev-up`, point Tilt at the context, and push images to a registry the cluster
+can pull from:
+
+```bash
+cp dev/.env.example dev/.env   # set K8S_CONTEXT and DOCKER_REGISTRY_URL
+tilt up -f dev/Tiltfile
+```
+
 ## Configuration
 
 All settings live in `dev/.env` (see `dev/.env.example`). Common options:
@@ -98,6 +111,8 @@ All settings live in `dev/.env` (see `dev/.env.example`). Common options:
 | `KUBEAI_VERSION` | _(latest)_ | Pin the KubeAI chart version. |
 | `KUBEAI_EXTRA_VALUES` | _(none)_ | Extra KubeAI values file, e.g. `deploy/kubeai/values-gpu.yaml`. |
 | `PROVIDER_NAMESPACE` | `default` | Namespace for KubeAI, the provider, and Instances. |
+| `K8S_CONTEXT` | _(unset)_ | Restrict Tilt to a specific Kubernetes context. |
+| `DOCKER_REGISTRY_URL` | _(unset)_ | Push images here instead of the cluster's local registry. |
 
 > **Note:** While OpenEverest v2 is in pre-release, the Helm repository only
 > publishes pre-release tags (e.g. `2.0.0-dev.1`). Helm's "latest" resolution
