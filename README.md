@@ -51,7 +51,7 @@ This provider has **not been released yet** — the table describes `main`.
 | Vertical scaling (CPU / memory) | ✅ | through the component's `resourceProfile` (e.g. `nvidia-gpu-l4:1`, `cpu:1`) |
 | Version upgrades | ✅ | change `spec.version`; see [Versions](#versions) |
 | Custom configuration | ✅ | engine `args` and `env` on the `server` component |
-| Monitoring | ⚠️ | vLLM exposes Prometheus metrics; see [docs/observability.md](docs/observability.md) |
+| Monitoring | ⚠️ | vLLM exposes Prometheus metrics; see [Observability](#observability) |
 | TLS | ❌ | not exposed through the Instance API |
 
 Model artefacts are pulled from the URI given in `model.source` (`hf://`, `s3://`, `pvc://`,
@@ -124,15 +124,26 @@ Component names are defined by this provider — see [definition/provider.yaml](
 More examples live in [examples/](examples/) — [instance-simple.yaml](examples/instance-simple.yaml)
 runs on CPU, [instance-gpu.yaml](examples/instance-gpu.yaml) needs an NVIDIA cluster.
 
-Watch it come up and call the model:
+Watch it come up:
 
 ```bash
 kubectl get instance qwen2-05b-cpu -w
-kubectl port-forward svc/kubeai 8000:80
-curl -s http://127.0.0.1:8000/openai/v1/models | jq
+kubectl get model                          # the KubeAI Model the provider created
+kubectl get pods -l model=qwen2-05b-cpu    # the serving pods KubeAI scheduled
 ```
 
-The API is OpenAI-compatible and served under `/openai/v1/...` (not `/v1/...`).
+Then call it:
+
+```bash
+kubectl port-forward svc/kubeai 8000:80
+curl -s http://127.0.0.1:8000/openai/v1/models | jq
+curl http://127.0.0.1:8000/openai/v1/chat/completions \
+  -H 'Content-Type: application/json' \
+  -d '{"model":"qwen2-05b-cpu","messages":[{"role":"user","content":"hi"}],"max_tokens":32}'
+```
+
+The API is OpenAI-compatible and served under `/openai/v1/...` (not `/v1/...`). The `model`
+field is the Instance name — for the GPU example that is `llama-3-8b`.
 
 ## Topologies
 
@@ -173,6 +184,22 @@ The technology-specific knobs worth knowing about, all on the `server` component
 | `resourceProfile` | KubeAI resource profile, e.g. `cpu:1` or `nvidia-gpu-l4:1` |
 | `cacheProfile` | KubeAI cache profile for model artefacts |
 | `args`, `env` | Extra engine arguments and environment variables |
+
+### Observability
+
+vLLM exposes Prometheus metrics, and KubeAI ships a `PodMonitor` for them (enabled by
+[deploy/kubeai/values-gpu.yaml](deploy/kubeai/values-gpu.yaml)). On a GPU cluster, scrape
+them with kube-prometheus-stack:
+
+```bash
+helm upgrade --install prometheus prometheus-community/kube-prometheus-stack \
+  -n monitoring --create-namespace \
+  -f deploy/observability/values-prometheus.yaml
+```
+
+Import [examples/observability/vllm-grafana-dashboard.json](examples/observability/vllm-grafana-dashboard.json)
+into Grafana for the request, latency and KV-cache panels. Full steps:
+[docs/observability.md](docs/observability.md).
 
 ## Development
 
