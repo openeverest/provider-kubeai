@@ -1,5 +1,13 @@
 # KubeAI Provider
 
+> [!WARNING]
+> **Pre-alpha.** OpenEverest v2 and this provider are under active development. CRD schemas,
+> chart values and defaults change frequently, including in breaking ways, and there is no
+> supported upgrade path between versions yet. Not for production use.
+
+<!-- Remove the pre-alpha banner and the status badge at v2 GA. -->
+
+[![Status](https://img.shields.io/badge/status-pre--alpha-orange)](https://github.com/openeverest/openeverest)
 [![CI](https://github.com/openeverest/provider-kubeai/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/openeverest/provider-kubeai/actions/workflows/ci.yaml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/openeverest/provider-kubeai.svg)](https://pkg.go.dev/github.com/openeverest/provider-kubeai)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
