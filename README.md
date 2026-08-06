@@ -52,12 +52,15 @@ This provider has **not been released yet** — the table describes `main`.
 
 ## Capabilities
 
+What you can do to a running instance through the `Instance` API. Upgrading the
+provider itself is covered under [Installation](#installation).
+
 | Capability | Status | Notes |
 |---|---|---|
 | Provisioning | ✅ | |
 | Horizontal scaling | ✅ | request-based autoscaling; `minReplicas` / `maxReplicas` on the topology |
 | Vertical scaling (CPU / memory) | ✅ | through the component's `resourceProfile` (e.g. `nvidia-gpu-l4:1`, `cpu:1`) |
-| Version upgrades | ✅ | change `spec.version`; see [Versions](#versions) |
+| Version upgrades | ✅ | of the deployed inference server version — change `spec.version`; see [Versions](#versions) |
 | Custom configuration | ✅ | engine `args` and `env` on the `server` component |
 | Monitoring | ⚠️ | vLLM exposes Prometheus metrics; see [Observability](#observability) |
 | TLS | ❌ | not exposed through the Instance API |
