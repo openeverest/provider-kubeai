@@ -101,6 +101,18 @@ provider:
   # -- The name to register for the Provider custom resource
   name: provider-kubeai
 
+# -- Curated LLM catalog, installed as InstancePreset CRs. See docs/model-catalog.md.
+modelCatalog: []
+# modelCatalog:
+#   - name: qwen2-05b-cpu
+#     displayName: "Qwen2 0.5B (Ollama, CPU)"
+#     version: ollama-cpu
+#     minReplicas: 1
+#     maxReplicas: 1
+#     model:
+#       source: ollama://qwen2:0.5b
+#     resourceProfile: cpu:1
+
 # -- Additional environment variables to set on the provider container
 extraEnv: []
 # - name: MY_VAR
