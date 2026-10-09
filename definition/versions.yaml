@@ -7,10 +7,10 @@
 
 componentTypes:
     vllm:
+        defaultVersion: "0.11.2"
         versions:
             - version: "0.11.2"
               image: vllm/vllm-openai:v0.11.2
-              default: true
             - version: "0.10.1"
               image: vllm/vllm-openai:v0.10.1
             # CPU-friendly engine release for local development.
@@ -22,9 +22,9 @@ componentTypes:
 # Version bundles: curated sets of component versions known to work together.
 # Users set spec.version to a bundle name; the runtime resolves each
 # component's version before Sync() is called.
+defaultVersion: "vllm-0.11.2"
 versions:
     - name: "vllm-0.11.2"
-      default: true
       components:
           server: "0.11.2"
     - name: "vllm-0.10.1"
