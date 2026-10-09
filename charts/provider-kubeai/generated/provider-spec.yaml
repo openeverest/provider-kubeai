@@ -3,9 +3,9 @@
 spec:
   componentTypes:
     vllm:
+      defaultVersion: 0.11.2
       versions:
-        - default: true
-          image: vllm/vllm-openai:v0.11.2
+        - image: vllm/vllm-openai:v0.11.2
           version: 0.11.2
         - image: vllm/vllm-openai:v0.10.1
           version: 0.10.1
@@ -40,6 +40,9 @@ spec:
               type: string
           type: object
       type: vllm
+  defaultVersion: vllm-0.11.2
+  release:
+    version: 0.1.0
   topologies:
     autoscaled:
       components:
@@ -93,6 +96,7 @@ spec:
                     disabled: true
                 optionsPath: spec.versions
                 optionsPathConfig:
+                  defaultValuePath: spec.defaultVersion
                   labelPath: name
                   valuePath: name
               path: spec.version
@@ -161,7 +165,6 @@ spec:
   versions:
     - components:
         server: 0.11.2
-      default: true
       name: vllm-0.11.2
     - components:
         server: 0.10.1
