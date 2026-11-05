@@ -183,8 +183,8 @@ Source of truth: [definition/versions.yaml](definition/versions.yaml).
 - **Chart values:** [charts/provider-kubeai/values.yaml](charts/provider-kubeai/values.yaml)
 - **Instance parameters:** per-component and per-topology `parameters` schemas, defined under
   [definition/](definition/) and published on the `Provider` resource
-  (`kubectl get provider provider-kubeai -o yaml`). The API server and the UI validate user
-  input against these schemas.
+  (`kubectl get provider provider-kubeai -o yaml`). The provider checks every Instance
+  against them, and the UI checks the form against them as you type.
 
 The technology-specific knobs worth knowing about, all on the `server` component:
 

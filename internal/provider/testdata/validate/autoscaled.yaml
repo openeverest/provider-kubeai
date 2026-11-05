@@ -1,0 +1,24 @@
+apiVersion: core.openeverest.io/v1alpha1
+kind: Instance
+metadata:
+  name: llama
+spec:
+  providerRef:
+    name: provider-kubeai
+  topology:
+    type: autoscaled
+    parameters:
+      minReplicas: 0
+      maxReplicas: 2
+  parameters:
+    task: TextGeneration
+  components:
+    server:
+      parameters:
+        model:
+          source: hf://meta-llama/Llama-3.1-8B-Instruct
+          estimatedParamBillions: 8
+          quantization: fp16
+      resources:
+        limits:
+          nvidia.com/gpu: "1"

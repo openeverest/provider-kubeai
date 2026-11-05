@@ -48,42 +48,6 @@ func New() *Provider {
 	}
 }
 
-// Validate checks if the Instance spec is valid before the Sync runs
-func (p *Provider) Validate(c *controller.Context) error {
-	srv, ok := c.Instance().Spec.Components[common.ComponentServer]
-	if !ok {
-		return fmt.Errorf("component.%s is required", common.ComponentServer)
-	}
-
-	var cs components.VllmParameters
-	if err := c.DecodeComponentParameters(
-		srv,
-		&cs,
-	); err != nil {
-		return fmt.Errorf("components.%s.parameters is required : %w", common.ComponentServer, err)
-	}
-
-	if cs.Model.Source == "" {
-		return fmt.Errorf("components.%s.parameters.model.source is required", common.ComponentServer)
-	}
-
-	if engineForSource(cs.Model.Source) == "" {
-		return fmt.Errorf("model.source must start with hf://, pvc://, ollama://, s3://, gs:// or oss://")
-	}
-
-	// AutoScaled Topology validator for min and max replicas count
-	var topo autoscaled.AutoScaledTopologyParameters
-	if c.TryDecodeTopologyParameters(&topo) {
-		if topo.MaxReplicas < topo.MinReplicas {
-			return fmt.Errorf("topology.parameters.maxReplicas (%d) must be >= minReplicas (%d)",
-				topo.MaxReplicas, topo.MinReplicas)
-		}
-	}
-
-	return validateGPUFit(cs.Model, gpuQuantity(srv))
-
-}
-
 // Sync ensures the KubeAI Model CR matches the Instance desired state.
 //
 // It uses CreateOrUpdate and only writes fields this provider owns. It never

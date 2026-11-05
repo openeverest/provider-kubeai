@@ -62,7 +62,7 @@ securityContext:
 service:
   # -- Service type
   type: ClusterIP
-  # -- Service port for the HTTP server (schema/validation endpoints)
+  # -- Service port for the HTTP server (health endpoints)
   port: 8082
 
 # -- Resource limits and requests

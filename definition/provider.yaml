@@ -3,6 +3,10 @@
 # Always run `make generate` after updating the file
 name: provider-kubeai
 
+# Instance-wide parameters (Instance.spec.parameters), a Go type in
+# definition/types.go.
+parametersSchema: Parameters
+
 # The single logical component of an LLM deployment: the inference server
 # Its type is vllm(underlying software), and its free-form configuration
 # model source, engine is described by VllmParameters in definitions/components/types.go
