@@ -17,30 +17,64 @@ spec:
         openAPIV3Schema:
           properties:
             args:
+              description: |-
+                Args are extra engine flags appended
+                e.g. --max-model-len=8192
               items:
                 type: string
               type: array
             cacheProfile:
+              description: CacheProfile enables model artifact caching using a KubeAI CacheProfile
               type: string
             env:
               additionalProperties:
                 type: string
+              description: Env variables to be added to the server process
               type: object
             model:
+              description: Model describes the model artifact to serve
               properties:
                 estimatedParamBillions:
+                  description: |-
+                    EstimatedParamBillions is an optional hint (model size in billions of params)
+                    used by Validate() for a GPU memory
                   format: int32
                   type: integer
                 quantization:
+                  description: Quantization declares the weight precision for the fit heuristic.
+                  enum:
+                    - fp16
+                    - int8
+                    - int4
                   type: string
                 source:
+                  description: Source is the model URL understood by the serving engine.
                   type: string
+              required:
+                - source
               type: object
             resourceProfile:
+              description: |-
+                ResourceProfile is the KubeAI resource profile in the form
+                "<profile-name>:<count>", e.g. "cpu:2" or "nvidia-gpu-l4:1"
               type: string
+          required:
+            - model
           type: object
       type: vllm
   defaultVersion: vllm-0.11.2
+  parametersSchema:
+    openAPIV3Schema:
+      description: Parameters maps to Instance.spec.parameters.
+      properties:
+        task:
+          description: Task selects the model capability, which dictates openAI compatible APIs exposed for the model
+          enum:
+            - TextGeneration
+            - TextEmbedding
+            - SpeechToText
+          type: string
+      type: object
   release:
     version: 0.1.0
   topologies:
@@ -49,19 +83,36 @@ spec:
         server: {}
       parametersSchema:
         openAPIV3Schema:
+          description: |-
+            AutoScaledTopologyParameters maps to Instance.spec.topology.parameters for the autoscaled topology.
+            It configures Kube-AI request based autoscaler capped between minReplicas to maxReplicas
           properties:
             maxReplicas:
+              description: MaxReplicas is the upper bound of server pods
               format: int32
+              minimum: 1
               type: integer
             minReplicas:
+              description: MinReplicas is the lower bound of server pods. zero here as it enables scale-to-zero
               format: int32
+              minimum: 0
               type: integer
             scaleDownDelaySeconds:
+              description: |-
+                ScaleDownDelaySeconds is the minimum time before scaling down after the
+                autoscaler decides to. Defaults to KubeAI's default (30).
               format: int64
               type: integer
             targetRequests:
+              description: |-
+                TargetRequests is the avg no. of in flight requests per pod the autoscaler tries to maintain,
+                Default for KubeAI is 100
               format: int32
+              minimum: 1
               type: integer
+          required:
+            - maxReplicas
+            - minReplicas
           type: object
   uiSchema:
     autoscaled:
