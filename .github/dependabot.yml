@@ -1,0 +1,13 @@
+# KubeAI is pinned as a Go module (its API types, in go.mod). The provider does
+# not bundle the KubeAI chart, so there is no Helm dependency to bump alongside it.
+version: 2
+
+updates:
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    allow:
+      - dependency-name: "github.com/kubeai-project/kubeai"
+    labels:
+      - "dependencies"
