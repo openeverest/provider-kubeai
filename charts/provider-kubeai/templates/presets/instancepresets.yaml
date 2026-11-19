@@ -1,0 +1,74 @@
+{{- if .Values.modelCatalog }}
+{{- $spec := (.Files.Get "generated/provider-spec.yaml" | fromYaml).spec }}
+{{- $validVersions := list }}
+{{- range $spec.versions }}
+{{- $validVersions = append $validVersions .name }}
+{{- end }}
+{{- $seenNames := dict }}
+{{- range .Values.modelCatalog }}
+{{- if not .name }}
+{{- fail "modelCatalog: every entry requires a name" }}
+{{- end }}
+{{- if hasKey $seenNames .name }}
+{{- fail (printf "modelCatalog: duplicate entry name %q" .name) }}
+{{- end }}
+{{- $_ := set $seenNames .name true }}
+{{- if not .version }}
+{{- fail (printf "modelCatalog entry %q: version is required (one of: %s)" .name (join ", " $validVersions)) }}
+{{- end }}
+{{- if not (has .version $validVersions) }}
+{{- fail (printf "modelCatalog entry %q: version %q is not a defined version bundle (valid: %s) — add it to definition/versions.yaml" .name .version (join ", " $validVersions)) }}
+{{- end }}
+{{- if not .model }}
+{{- fail (printf "modelCatalog entry %q: model.source is required" .name) }}
+{{- end }}
+{{- if not .model.source }}
+{{- fail (printf "modelCatalog entry %q: model.source is required" .name) }}
+{{- end }}
+{{- if not .resourceProfile }}
+{{- fail (printf "modelCatalog entry %q: resourceProfile is required" .name) }}
+{{- end }}
+---
+apiVersion: core.openeverest.io/v1alpha1
+kind: InstancePreset
+metadata:
+  name: {{ printf "%s-%s" (include "provider-kubeai.fullname" $) .name | trunc 63 | trimSuffix "-" }}
+  labels:
+    {{- include "provider-kubeai.labels" $ | nindent 4 }}
+    provider-kubeai.openeverest.io/catalog-entry: {{ .name }}
+  annotations:
+    # Convention for a human-friendly dropdown label; adjust to whatever
+    # field the Everest UI's preset picker actually reads.
+    provider-kubeai.openeverest.io/display-name: {{ .displayName | default .name | quote }}
+spec:
+  providerRef:
+    name: {{ $.Values.provider.name }}
+  version: {{ .version }}
+  topology:
+    type: autoscaled
+    parameters:
+      minReplicas: {{ .minReplicas | default 0 }}
+      maxReplicas: {{ .maxReplicas | default 1 }}
+  {{- if .task }}
+  parameters:
+    task: {{ .task }}
+  {{- end }}
+  components:
+    server:
+      parameters:
+        model:
+          {{- toYaml .model | nindent 10 }}
+        resourceProfile: {{ .resourceProfile }}
+        {{- if .args }}
+        args:
+          {{- toYaml .args | nindent 10 }}
+        {{- end }}
+        {{- if .env }}
+        env:
+          {{- toYaml .env | nindent 10 }}
+        {{- end }}
+        {{- if .cacheProfile }}
+        cacheProfile: {{ .cacheProfile }}
+        {{- end }}
+{{- end }}
+{{- end }}
