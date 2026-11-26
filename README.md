@@ -50,6 +50,11 @@ This provider has **not been released yet** — the table describes `main`.
 |---|---|---|---|
 | `main` | `>= 2.0.0` | latest release | `1.30` – `1.34` |
 
+Each chart also names the OpenEverest it is built for, in the `openeverest.io/contract-version`
+annotation of its `Chart.yaml`, which `make generate` writes. A Helm install on an OpenEverest
+that does not serve that version fails, and a build applied any other way waits, unready,
+until OpenEverest serves it; see [Installation](#installation).
+
 ## Capabilities
 
 What you can do to a running instance through the `Instance` API. Upgrading the
@@ -95,6 +100,22 @@ helm install provider-kubeai charts/provider-kubeai --namespace everest-system
   chart and kept across upgrades; set `admission.certManager.enabled=true` to have
   cert-manager issue it, or supply one through `admission.certs`. If the provider is down,
   writes are admitted and the `Instance` reports the errors in its `Ready` condition.
+- With Helm or Flux, the install fails, before anything is applied, when the OpenEverest in
+  the cluster does not serve the OpenEverest the chart is built for, and the error names the
+  OpenEverest it needs. Argo CD, and any tool that applies pre-rendered manifests, renders the
+  chart without reading the cluster, so that check passes there. Whichever tool applies it, a
+  new build of the provider that the installed OpenEverest does not support stays alive but
+  unready until OpenEverest does, while the previous build, if any, keeps serving; a Warning
+  Event on the `Provider` says why (see [Troubleshooting](#troubleshooting)).
+- To install anyway, set `compatibility.acknowledge.coreVersion` to the OpenEverest version
+  the cluster runs, which the error also names. The chart writes it on the `Provider` as
+  `openeverest.io/compatibility-acknowledged`, and the provider reads it there at startup, so
+  it lets a held build start too. It holds on that release and on later ones that keep its
+  contract, such as its patch releases, and expires with the first OpenEverest release that
+  changes the contract, which is checked again.
+- The chart sets no annotation for any tool itself: `openeverest.annotations` adds
+  annotations to the `Provider`, such as `argocd.argoproj.io/sync-wave: "-1"` to have Argo CD
+  apply it before the provider's `Deployment`.
 
 Uninstall:
 
@@ -227,15 +248,16 @@ Step-by-step runbooks: [k3d](docs/local-k3d-runbook.md), [kind](docs/local-kind-
 
 ```bash
 make dev-up             # local cluster + Tilt dev environment (see dev/README.md)
-make generate           # RBAC, provider spec, Helm chart sync
+make generate           # RBAC, provider spec, Helm chart sync, OpenEverest stamp
 make run                # run the provider locally against the cluster
 make test               # unit tests
 make test-integration   # chainsaw suites
 make dev-down
 ```
 
-`make help` lists every target. `make verify` fails when generated files are stale — run
-`make generate` and commit the result.
+`make help` lists every target. `make verify` fails when generated files are stale or the
+chart is not stamped with the OpenEverest the provider is built against — run `make generate`
+and commit the result.
 
 The provider contract (`Validate` / `Sync` / `Status` / `Cleanup`), RBAC markers, watches,
 and code generation are documented once for all providers in
@@ -249,7 +271,7 @@ and code generation are documented once for all providers in
 | `internal/provider/` | `ProviderInterface` implementation, RBAC markers |
 | `internal/common/` | Component name constants |
 | `definition/` | Provider identity, component types, versions, topologies |
-| `charts/provider-kubeai/` | Helm chart (`generated/` is produced by `make generate`) |
+| `charts/provider-kubeai/` | Helm chart (`generated/`, the `Chart.yaml` stamp, `templates/_openeverest_contract.tpl` and `templates/openeverest-compat-check.yaml` are produced by `make generate`) |
 | `config/rbac/role.yaml` | Generated `ClusterRole` — do not edit |
 | `deploy/` | KubeAI and Prometheus values used by the runbooks |
 | `docs/` | k3d, kind, GPU and observability runbooks |
@@ -275,6 +297,7 @@ kubectl logs -n everest-system deploy/provider-kubeai -f
 | `Instance` stuck in `Creating` | `kubectl describe instance <name>` conditions, then the provider logs |
 | No `Provider` resource in the cluster | Is the chart installed? Check the provider deployment logs |
 | `Instance` ignored entirely | `spec.providerRef.name` must be `provider-kubeai` |
+| New provider pod running but never `Ready` | It waits until the installed OpenEverest supports this build: the Warning Event in `kubectl describe providers.core.openeverest.io provider-kubeai` says why |
 | `Model` created but no pods | KubeAI must run in the same namespace as the Instance; check the KubeAI controller logs |
 | Requests return 404 | Use `/openai/v1/...`, and make sure the `model` field matches the Instance name |
 | CPU model takes minutes to answer | Ollama cold starts are slow; pin `minReplicas: 1` to avoid scale-to-zero |

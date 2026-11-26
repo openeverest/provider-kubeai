@@ -101,6 +101,15 @@ provider:
   # -- The name to register for the Provider custom resource
   name: provider-kubeai
 
+openeverest:
+  # -- Annotations to add to the objects of this chart that OpenEverest
+  # interprets: the Provider. A key under openeverest.io/ belongs to the
+  # chart and to OpenEverest, and fails the render.
+  annotations: {}
+    # For example, to have Argo CD apply the Provider before the provider's
+    # Deployment:
+    # argocd.argoproj.io/sync-wave: "-1"
+
 # -- Additional environment variables to set on the provider container
 extraEnv: []
 # - name: MY_VAR
@@ -122,6 +131,21 @@ admission:
   certManager:
     # -- Issue the serving certificate with cert-manager, which must be installed.
     enabled: false
+
+compatibility:
+  acknowledge:
+    # -- Install and start the provider even though the OpenEverest in the
+    # cluster does not serve the OpenEverest this chart is built for. Otherwise
+    # a Helm install fails before anything is applied, and a build applied
+    # without that check (Argo CD, pre-rendered manifests) stays unready until
+    # OpenEverest serves it. The chart writes it on the Provider, where the
+    # provider reads it at startup. Set it to the version of OpenEverest the
+    # cluster runs, which the error names. It holds on that release and the
+    # later ones that keep its contract, such as its patch releases, and
+    # expires with the first OpenEverest release that changes the contract,
+    # which is checked again. Set ahead of an upgrade, it does nothing until
+    # that release is installed.
+    coreVersion: ""
 
 # -- Leader election configuration
 leaderElection:
