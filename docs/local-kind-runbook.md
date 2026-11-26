@@ -16,7 +16,7 @@ kubectl version --client
 kind version                # Required for the KIND flow below.
 ```
 
-The module pins OpenEverest `v2.0.0-dev.1`; use CRDs from that selected module
+The module pins OpenEverest `v2.0.0-alpha.1`; use CRDs from that selected module
 version rather than copying paths or manifests from another release.
 
 The repository tracks the static Helm chart:
