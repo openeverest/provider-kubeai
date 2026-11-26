@@ -116,7 +116,7 @@ kubectl apply -f examples/instance-simple.yaml
 kubectl get instances -n default -w
 ```
 
-Expected: `Provisioning` → `Initializing` (model download) → `Ready`.
+Expected: the `STATUS` column reads `Creating` while KubeAI downloads the model and starts the server, then `Ready`.
 
 ## 6. Verify reconciliation
 

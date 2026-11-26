@@ -106,7 +106,7 @@ All settings live in `dev/.env` (see `dev/.env.example`). Common options:
 | Variable | Default | Description |
 | --- | --- | --- |
 | `INSTALL_OPENEVEREST` | `true` | Install the released OpenEverest core. |
-| `OPENEVEREST_VERSION` | `2.0.0-dev.1` | Pin the core chart version (required while v2 is pre-release). |
+| `OPENEVEREST_VERSION` | `2.0.0-alpha.1` | Pin the core chart version (required while v2 is pre-release). |
 | `INSTALL_KUBEAI` | `true` | Install the KubeAI operator. |
 | `KUBEAI_VERSION` | _(latest)_ | Pin the KubeAI chart version. |
 | `KUBEAI_EXTRA_VALUES` | _(none)_ | Extra KubeAI values file, e.g. `deploy/kubeai/values-gpu.yaml`. |
@@ -115,7 +115,7 @@ All settings live in `dev/.env` (see `dev/.env.example`). Common options:
 | `DOCKER_REGISTRY_URL` | _(unset)_ | Push images here instead of the cluster's local registry. |
 
 > **Note:** While OpenEverest v2 is in pre-release, the Helm repository only
-> publishes pre-release tags (e.g. `2.0.0-dev.1`). Helm's "latest" resolution
+> publishes pre-release tags (e.g. `2.0.0-alpha.1`). Helm's "latest" resolution
 > skips pre-releases, so `OPENEVEREST_VERSION` must be set explicitly until
 > v2.0.0 is generally available. It defaults to the version this provider is
 > built against.

@@ -16,7 +16,7 @@ kubectl version --client
 kind version                # Required for the KIND flow below.
 ```
 
-The module pins OpenEverest `v2.0.0-dev.1`; use CRDs from that selected module
+The module pins OpenEverest `v2.0.0-alpha.1`; use CRDs from that selected module
 version rather than copying paths or manifests from another release.
 
 The repository tracks the static Helm chart:
@@ -207,7 +207,7 @@ kubectl apply -f examples/instance-simple.yaml
 kubectl get instances -n default -w
 ```
 
-Expected progression is `Provisioning`, then `Initializing` while KubeAI downloads the model, then `Ready` once at least one Model replica is ready.
+Expected progression is `Creating` in the `STATUS` column while KubeAI downloads the model and starts the server, then `Ready` once at least one Model replica is ready.
 
 ## Verify every reconciliation responsibility
 

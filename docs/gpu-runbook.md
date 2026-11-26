@@ -123,7 +123,7 @@ First request with `minReplicas: 0` pays cold start (schedule + image + weight d
 
 ## 6. Scale-to-zero check
 
-With no traffic, after `scaleDownDelaySeconds`, the model pod should go away and Instance phase may become `Suspended`. A new chat request should scale back up.
+With no traffic, after `scaleDownDelaySeconds`, the model pod should go away. The Instance stays `Ready` and available, with reason `Idle` on its `Available` condition, because the next request starts the model. A new chat request should scale back up.
 
 ```sh
 kubectl get model llama-3-8b -o jsonpath='{.spec.replicas} {.status.replicas}{"\n"}'
