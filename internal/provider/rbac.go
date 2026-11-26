@@ -12,6 +12,12 @@ package provider
 // +kubebuilder:rbac:groups=coordination.k8s.io,resources=leases,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups="",resources=events,verbs=create;patch
 // +kubebuilder:rbac:groups=events.k8s.io,resources=events,verbs=create;patch
+// A new build stays unready until the installed OpenEverest supports it: the
+// runtime reads the versions OpenEverest supports on the Provider CRD, then
+// records the version it was built for on its Provider's status. Keep
+// resourceNames in sync with common.ProviderName.
+// +kubebuilder:rbac:groups=apiextensions.k8s.io,resources=customresourcedefinitions,resourceNames=providers.core.openeverest.io,verbs=get
+// +kubebuilder:rbac:groups=core.openeverest.io,resources=providers/status,resourceNames=provider-kubeai,verbs=patch
 
 // KubeAI Model CRs (created and owned by Sync):
 // +kubebuilder:rbac:groups=kubeai.org,resources=models,verbs=get;list;watch;create;update;patch;delete

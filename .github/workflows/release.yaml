@@ -165,6 +165,11 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@dda3372f752e03dde6b3237bc9431cdc2f7a02a2 # v5.0.0
 
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5.6.0
+        with:
+          go-version-file: go.mod
+          cache: true
+
       - name: Prepare RC chart
         if: env.IS_RC == 'true'
         run: |
@@ -176,6 +181,13 @@ jobs:
         run: |
           cd charts/provider-kubeai
           VERSION=${{ env.VERSION }} make release
+
+      # A release tells users the oldest OpenEverest it works with, so it must
+      # be built against an OpenEverest they can install: this fails on a chart
+      # stamped for an unreleased OpenEverest, or a go.mod that replaces
+      # OpenEverest or takes it from a local directory.
+      - name: Verify the chart is stamped for a released OpenEverest
+        run: go tool provider-sdk verify --release --chart-dir charts/provider-kubeai
 
       - name: Release chart
         uses: helm/chart-releaser-action@cae68fefc6b5f367a0275617c9f83181ba54714f # v1.7.0
