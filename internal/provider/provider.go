@@ -118,12 +118,12 @@ func (p *Provider) Sync(c *controller.Context) error {
 	return nil
 }
 
-// Status reads the KubeAI Model status and maps it to an Instance phase
+// Status reads the KubeAI Model status and reports what it observes.
 func (p *Provider) Status(c *controller.Context) (controller.Status, error) {
 	model := &kubeaiv1.Model{}
 	if err := c.Get(model, c.Name()); err != nil {
 		if controller.IsNotFound(err) {
-			return controller.Provisioning("waiting for KubeAI model to be created"), nil
+			return controller.Progressing("waiting for KubeAI model to be created"), nil
 		}
 		return controller.Status{}, err
 	}
@@ -132,13 +132,26 @@ func (p *Provider) Status(c *controller.Context) (controller.Status, error) {
 	case model.Status.Replicas.Ready > 0:
 		return controller.ReadyWithConnectionDetails(connectionDetails(c)), nil
 	case model.Status.Cache != nil && !model.Status.Cache.Loaded:
-		return controller.Initializing("downloading model weights into cache"), nil
-	case model.Status.Replicas.All == 0:
-		// minReplicas=0 and no in-flight requests then compute is scale down to zero
-		return controller.Suspended(), nil
+		return controller.Progressing("downloading model weights into cache"), nil
+	case model.Spec.MinReplicas == 0 && model.Status.Replicas.All == 0:
+		return scaledToZero(c), nil
 	default:
-		return controller.Provisioning("waiting for model server pods to become ready"), nil
+		return controller.Progressing("waiting for model server pods to become ready"), nil
 	}
+}
+
+// reasonIdle is the Available reason of a model scaled to zero.
+const reasonIdle = "Idle"
+
+// scaledToZero reports a model KubeAI has scaled to zero for lack of
+// requests. It runs what the Instance asks for and clients can use it: the
+// KubeAI proxy starts a server on the next request and holds the request
+// until the server is ready.
+func scaledToZero(c *controller.Context) controller.Status {
+	s := controller.ReadyWithConnectionDetails(connectionDetails(c)).WithAvailable(controller.Available)
+	s.AvailableReason = reasonIdle
+	s.AvailableMessage = "Scaled to zero: the next request starts the model"
+	return s
 }
 
 // Cleanup handles deletion. The Model CR carries an owner reference set in

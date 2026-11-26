@@ -207,7 +207,7 @@ kubectl apply -f examples/instance-simple.yaml
 kubectl get instances -n default -w
 ```
 
-Expected progression is `Provisioning`, then `Initializing` while KubeAI downloads the model, then `Ready` once at least one Model replica is ready.
+Expected progression is `Creating` in the `STATUS` column while KubeAI downloads the model and starts the server, then `Ready` once at least one Model replica is ready.
 
 ## Verify every reconciliation responsibility
 
