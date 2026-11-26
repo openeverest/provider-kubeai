@@ -119,6 +119,13 @@ All settings live in `dev/.env` (see `dev/.env.example`). Common options:
 > skips pre-releases, so `OPENEVEREST_VERSION` must be set explicitly until
 > v2.0.0 is generally available. It defaults to the version this provider is
 > built against.
+>
+> While `go.mod` requires a commit of core `main` whose contract has changed since
+> the last release, the chart's stamp is a development value, such as
+> `2.0.0-alpha.1.next`, and no released core serves this provider: the chart
+> refuses to install on one, and the provider would stay unready there. Run the
+> core from that commit instead, as described in
+> [Developing the core and the provider together](#developing-the-core-and-the-provider-together).
 
 > **Namespace constraint:** KubeAI only serves `Model` resources from its own
 > namespace, and this provider creates the Model in the same namespace as the
@@ -145,7 +152,10 @@ When you need to test against a locally built core (not a release), run two
 Tilt instances against the same cluster:
 
 1. In the OpenEverest core repo, start the core dev environment (`make dev-up`).
-   It manages `everest-system` and the core CRDs.
+   It manages `everest-system` and the core CRDs. To run the core this provider
+   is built against, first check out the commit `go.mod` requires: the last
+   twelve characters of the version `go list -m github.com/openeverest/openeverest/v2`
+   prints.
 
 2. In this repo, start the provider Tilt instance on a different port with the
    core installation disabled:
